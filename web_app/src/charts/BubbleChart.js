@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
-class BarChart extends Component {
+class BubbleChart extends Component {
   constructor(props) {
     super(props);
     this.createBarChart = this.createBarChart.bind(this);
@@ -18,11 +18,11 @@ class BarChart extends Component {
   calculateColors(data) {
     var categories = data.map(x => x.Category);
     var filteredCategories = [];
-    var i = 0;
+    var ind = 0;
     categories.forEach(element => {
       if (!filteredCategories.includes(element)) {
-        filteredCategories[i] = element;
-        i++;
+        filteredCategories[ind] = element;
+        ind++;
       }
     });
     var startIndex = 360.0 / filteredCategories.length;
@@ -38,6 +38,8 @@ class BarChart extends Component {
   }
 
   createBarChart() {
+    var width = window.screen.width;
+    var height = window.screen.height;
     const node = this.node;
     var links = this.props.links;
     var data = this.props.data;
@@ -50,29 +52,32 @@ class BarChart extends Component {
       .force(
         "forceCollide",
         d3.forceCollide(function(d) {
-          return d.circle + 8;
+          return d.NumberOfAppearances + 8;
         })
       )
-      .force("link", d3.forceLink());
+      .force("link", d3.forceLink())
+      .stop();
 
     var svg = d3
       .select(node)
       .append("g")
-      .attr("transform", "translate(250,250)");
+      .attr("transform", "translate(" + 200 + "," + 200 + ")");
 
     var radiusScale = d3
       .scaleSqrt()
-      .domain([1, 300])
-      .range([10, 80]);
+      .domain([
+        Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
+        Math.max.apply(null, data.map(d => d.NumberOfAppearances))
+      ])
+      .range([10, 50]);
+
     var linkScale = d3
       .scaleLinear()
       .domain([
         Math.min.apply(null, links.map(d => d.weight)),
         Math.max.apply(null, links.map(d => d.weight))
       ])
-      .range([0.5, 10]);
-
-      
+      .range([1, 7]);      
 
     var link = svg
     .selectAll(".link")
@@ -97,7 +102,7 @@ class BarChart extends Component {
         return i;
       })
       .attr("r", function(d) {
-        return radiusScale(d.circle);
+        return radiusScale(d.NumberOfAppearances);
       })
       .attr("fill", function(d) {
         return colors[d.Category - 1];
@@ -105,19 +110,19 @@ class BarChart extends Component {
       .on("mouseover", handleMouseOver)
       .on("mouseout", handleMouseOut);
 
-    var textt = svg
+    var text = svg
       .selectAll("text")
       .data(data)
       .enter()
       .append("text");
 
     function handleMouseOver(d, i) {
-      if (radiusScale(d.circle) > 25) return;
+      if (radiusScale(d.NumberOfAppearances) > 25) return;
 
       svg
         .append("text")
         .attr('y', function(d, i){
-          return data[i].x + 70;
+          return data[i].y - 70;
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
@@ -129,14 +134,14 @@ class BarChart extends Component {
     }
 
     function handleMouseOut(d, i) {
-      d3.select("#hoverId").remove(); // Remove text location
+      d3.select("#hoverId").remove();
     }
 
-    simulation.nodes(this.state.data).on("tick", ticked);
+    simulation.nodes(this.state.data);
+    for (var i = 0; i < 300; ++i) simulation.tick();
 
     simulation.force("link").links(link);
 
-    function ticked() {
       circles
         .attr("cx", function(d) {
           return d.x;
@@ -159,7 +164,7 @@ class BarChart extends Component {
           return data[d.target].y;
         });
 
-      textt
+      text
         .attr("x", function(d, i) {
           return data[i].x - 23;
         })
@@ -167,18 +172,18 @@ class BarChart extends Component {
           return data[i].y;
         })
         .text(function(d, i) {
-          return radiusScale(data[i].circle) > 25 ? d.Name : "";
+          return radiusScale(data[i].NumberOfAppearances) > 25 ? d.Name : "";
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
         .attr("fill", "black")
-    }
+    
   }
 
   render() {
     return (
-      <svg ref={node => (this.node = node)} width={900} height={900}></svg>
+      <svg ref={node => (this.node = node)} width={window.screen.width} height={window.screen.height}></svg>
     );
   }
 }
-export default BarChart;
+export default BubbleChart;
