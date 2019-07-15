@@ -7,21 +7,40 @@ function App() {
   var data = [
     {
       circle: 40,
+      Category: 1,
+      Name: "Disease 1"
 
     },
     {
-      circle: 3
+      circle: 3,
+      Category: 1,
+      Name: "Disease 2"
     },
     {
-      circle: 42
+      circle: 42,
+      Category: 1,
+      Name: "Disease 3"
     },
     {
-      circle: 30
+      circle: 30,
+      Category: 2,
+      Name: "Disease 4"
+
+    },
+    {
+      circle: 102,
+      Category: 3,
+      Name: "Disease 5"
+    },
+    {
+      circle: 32,
+      Category: 3,
+      Name: "Disease 6"
     }
+
   ]
   var links = [
-    {"source": 0, "target": 1, 'weight': 2},
-    {"source": 0, "target": 2, 'weight': 20}
+    {"source": 3, "target": 2, 'weight': 13}
   ]
 
   return (
