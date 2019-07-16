@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
+import { forceCluster } from 'd3-force-cluster'
 class BubbleChart extends Component {
   constructor(props) {
     super(props);
@@ -37,7 +38,7 @@ class BubbleChart extends Component {
     return colors;
   }
 
-  createBarChart() {
+  createBarChart() {{
     var width = window.screen.width;
     var height = window.screen.height;
     const node = this.node;
@@ -45,6 +46,14 @@ class BubbleChart extends Component {
     var data = this.props.data;
     var colors = this.calculateColors(this.state.data);
 
+    var clusters = [{
+      NumberOfAppearances: 42,
+      Category: 1,
+      Name: "Disease 3",
+      cluster: 1, 
+      radius : 42
+    }, 30, 102]
+      
     var simulation = d3
       .forceSimulation()
       .force("x", d3.forceX().strength(0.5))
@@ -52,16 +61,23 @@ class BubbleChart extends Component {
       .force(
         "forceCollide",
         d3.forceCollide(function(d) {
-          return d.NumberOfAppearances + 8;
+          return d.NumberOfAppearances + 10 ;
         })
       )
-      .force("link", d3.forceLink())
-      .stop();
+      .force('cluster', forceCluster()
+    .centers(function (d) { return clusters[d.cluster]; })
+    .strength(0.7)
+    .centerInertia(0.1))
+      .force("link", d3.forceLink());
+
+    
 
     var svg = d3
       .select(node)
       .append("g")
-      .attr("transform", "translate(" + 200 + "," + 200 + ")");
+      .attr("transform", "translate(" + 300 + "," + 300 + ")");
+
+      
 
     var radiusScale = d3
       .scaleSqrt()
@@ -69,7 +85,7 @@ class BubbleChart extends Component {
         Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
         Math.max.apply(null, data.map(d => d.NumberOfAppearances))
       ])
-      .range([10, 50]);
+      .range([7, 35]);
 
     var linkScale = d3
       .scaleLinear()
@@ -117,12 +133,15 @@ class BubbleChart extends Component {
       .append("text");
 
     function handleMouseOver(d, i) {
-      if (radiusScale(d.NumberOfAppearances) > 25) return;
+      if (radiusScale(d.NumberOfAppearances) > 15) return;
 
       svg
         .append("text")
-        .attr('y', function(d, i){
-          return data[i].y - 70;
+        .attr('y', function(){
+          return d.y - 10;
+        })
+        .attr('x', function(){
+          return d.x - 10;
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
@@ -137,12 +156,16 @@ class BubbleChart extends Component {
       d3.select("#hoverId").remove();
     }
 
-    simulation.nodes(this.state.data);
-    for (var i = 0; i < 300; ++i) simulation.tick();
+    simulation.nodes(this.state.data)
+    .on('tick', layoutTick)
 
     simulation.force("link").links(link);
 
-      circles
+   
+
+        function layoutTick (e) {
+         
+        circles
         .attr("cx", function(d) {
           return d.x;
         })
@@ -169,20 +192,22 @@ class BubbleChart extends Component {
           return data[i].x - 23;
         })
         .attr("y", function(d, i) {
-          return data[i].y;
+          return data[i].y + 10;
         })
         .text(function(d, i) {
-          return radiusScale(data[i].NumberOfAppearances) > 25 ? d.Name : "";
+          return radiusScale(data[i].NumberOfAppearances) > 15 ? d.Name : "";
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
         .attr("fill", "black")
+      }
+ 
     
-  }
+  }}
 
   render() {
     return (
-      <svg ref={node => (this.node = node)} width={window.screen.width} height={window.screen.height}></svg>
+      <svg ref={node => (this.node = node)} width={1500} height={1200}></svg>
     );
   }
 }
