@@ -52,16 +52,17 @@ class BubbleChart extends Component {
       .force(
         "forceCollide",
         d3.forceCollide(function(d) {
-          return d.NumberOfAppearances/3;
+          return d.NumberOfAppearances/2 * 0.7;
         })
       )
       .force("link", d3.forceLink())
       .stop();
 
+
     var svg = d3
       .select(node)
       .append("g")
-      .attr('width', 1000)
+      .attr('width', 1700)
       .attr('height', 800)
       .attr("transform", "translate(0,0)");
 
@@ -71,7 +72,7 @@ class BubbleChart extends Component {
         Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
         Math.max.apply(null, data.map(d => d.NumberOfAppearances))
       ])
-      .range([10, 30]);
+      .range([5, 25]);
 
     var linkScale = d3
       .scaleLinear()
@@ -119,7 +120,7 @@ class BubbleChart extends Component {
       .append("text");
 
     function handleMouseOver(d, i) {
-      if (radiusScale(d.NumberOfAppearances) > 25) return;
+      if (radiusScale(d.NumberOfAppearances) > 15) return;
 
       svg
         .append("text")
@@ -171,16 +172,16 @@ class BubbleChart extends Component {
 
       text
         .attr("x", function(d, i) {
-          return data[i].x - 23;
+          return data[i].x - radiusScale(d.NumberOfAppearances);
         })
         .attr("y", function(d, i) {
           return data[i].y;
         })
         .text(function(d, i) {
-          return radiusScale(data[i].NumberOfAppearances) > 25 ? d.Name : "";
+          return radiusScale(data[i].NumberOfAppearances) > 15 ? d.Name : "";
         })
         .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
+        .attr("font-size", "10px")
         .attr("fill", "black")
     
   }
