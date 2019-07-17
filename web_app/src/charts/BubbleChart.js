@@ -64,7 +64,7 @@ class BubbleChart extends Component {
       .append("g")
       .attr('width', 1700)
       .attr('height', 800)
-      .attr("transform", "translate(0,0)");
+      .attr("transform", "translate(200,0)");
 
     var radiusScale = d3
       .scaleSqrt()
