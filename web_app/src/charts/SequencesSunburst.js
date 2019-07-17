@@ -16,20 +16,23 @@ class SequencesSunburst extends Component {
     this.createChart();
   }
   componentDidUpdate() {
+    d3.select("#chart>svg").remove()
+    d3.select("#legend>svg").remove()
     this.createChart();
   }
   createChart(){
+    console.log(this.state.originalCenter)
     var builder = new RingBuilder(this.state.data,this.state.originalCenter)
     var root = builder.build();
 
     var width = 750;
-var height = 600;
-var radius = Math.min(width, height) / 2;
+    var height = 600;
+    var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-var b = {
-  w: 75, h: 30, s: 3, t: 10
-};
+    var b = {
+      w: 75, h: 30, s: 3, t: 10
+    };
 
 // Mapping of step names to colors
 // Total size of all segments; we set this later, after loading the data.
@@ -54,7 +57,7 @@ var arc = d3.arc()
     createVisualization(root);
 
     function createVisualization(json) {
- 
+      
   // Basic setup of page elements.
   initializeBreadcrumbTrail();
   d3.select("#togglelegend").on("click", toggleLegend);

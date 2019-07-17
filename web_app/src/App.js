@@ -5,28 +5,34 @@ import SequencesSunburst from '../src/charts/SequencesSunburst'
 import HomeScreen from './homescreen.js';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import "./style.css"
-
+import sequencesDataService  from "./services/sequencesData.json"
 
 class App extends Component { 
-  
+  constructor(props) {
+    super(props);
+    this.state = {
+      sequencesData: sequencesDataService.sequencesData,
+      originalCenter:sequencesDataService.sequencesData[0][0]
+    };
+  }
   _handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       console.log('do validate');
+      var result =e.target.value ;
+      this.setState((prevState)=>{
+        return {
+          data:prevState.data,
+          originalCenter:result
+        }
+      })
+      e.target.value = null;
     }
   }
 render(){
 
-  var sequencesData = [
-    [11,12,11],
-    [11,13,1],
-    [13,14,7],
-    [11,16,3],
-    [16,19,1],
-    [19,1122,3],
-    [1122,112,8],
-  ]
+
   var route = [
-    {c:SequencesSunburst,data:sequencesData,originalCenter:sequencesData[0][0]}
+    {c:SequencesSunburst,data:this.state.sequencesData,originalCenter:this.state.originalCenter}
   ]
   var data = [
     {
