@@ -38,8 +38,6 @@ class BubbleChart extends Component {
   }
 
   createBarChart() {
-    var width = window.screen.width;
-    var height = window.screen.height;
     const node = this.node;
     var links = this.props.links;
     var data = this.props.data;
@@ -47,21 +45,26 @@ class BubbleChart extends Component {
 
     var simulation = d3
       .forceSimulation()
-      .force("x", d3.forceX().strength(0.5))
-      .force("y", d3.forceY().strength(0.5))
+      .force("x", d3.forceX(500).strength(0.9))
+      .force("y", d3.forceY(500).strength(0.9))
+      .force('center', d3.forceCenter(500, 500))
+      .force("charge", d3.forceManyBody())
       .force(
         "forceCollide",
         d3.forceCollide(function(d) {
-          return d.NumberOfAppearances + 8;
+          return d.NumberOfAppearances/2 * 0.7;
         })
       )
       .force("link", d3.forceLink())
       .stop();
 
+
     var svg = d3
       .select(node)
       .append("g")
-      .attr("transform", "translate(" + 200 + "," + 200 + ")");
+      .attr('width', 1700)
+      .attr('height', 800)
+      .attr("transform", "translate(0,0)");
 
     var radiusScale = d3
       .scaleSqrt()
@@ -69,7 +72,7 @@ class BubbleChart extends Component {
         Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
         Math.max.apply(null, data.map(d => d.NumberOfAppearances))
       ])
-      .range([10, 50]);
+      .range([5, 25]);
 
     var linkScale = d3
       .scaleLinear()
@@ -117,12 +120,15 @@ class BubbleChart extends Component {
       .append("text");
 
     function handleMouseOver(d, i) {
-      if (radiusScale(d.NumberOfAppearances) > 25) return;
+      if (radiusScale(d.NumberOfAppearances) > 15) return;
 
       svg
         .append("text")
-        .attr('y', function(d, i){
-          return data[i].y - 70;
+        .attr('y', function(){
+          return d.y - radiusScale(d.NumberOfAppearances);
+        })
+        .attr('x', function(){
+          return d.x - radiusScale(d.NumberOfAppearances)/2;
         })
         .attr("font-family", "sans-serif")
         .attr("font-size", "11px")
@@ -138,7 +144,7 @@ class BubbleChart extends Component {
     }
 
     simulation.nodes(this.state.data);
-    for (var i = 0; i < 300; ++i) simulation.tick();
+    for (var i = 0; i < 500; ++i) simulation.tick();
 
     simulation.force("link").links(link);
 
@@ -166,16 +172,16 @@ class BubbleChart extends Component {
 
       text
         .attr("x", function(d, i) {
-          return data[i].x - 23;
+          return data[i].x - d.Name.length * 2.1;
         })
         .attr("y", function(d, i) {
           return data[i].y;
         })
         .text(function(d, i) {
-          return radiusScale(data[i].NumberOfAppearances) > 25 ? d.Name : "";
+          return radiusScale(data[i].NumberOfAppearances) > 15 ? d.Name : "";
         })
         .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
+        .attr("font-size", "10px")
         .attr("fill", "black")
     
   }
