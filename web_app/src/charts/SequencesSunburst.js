@@ -21,7 +21,38 @@ class SequencesSunburst extends Component {
   createChart(){
     var builder = new RingBuilder(this.state.data,this.state.originalCenter)
     var root = builder.build();
+
+    var width = 750;
+var height = 600;
+var radius = Math.min(width, height) / 2;
+
+// Breadcrumb dimensions: width, height, spacing, width of tip/tail.
+var b = {
+  w: 75, h: 30, s: 3, t: 10
+};
+
+// Mapping of step names to colors
+// Total size of all segments; we set this later, after loading the data.
+var totalSize = 0; 
+var vis = d3.select("#chart").append("svg:svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("svg:g")
+    .attr("id", "container")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+var partition = d3.partition()
+    .size([2 * Math.PI, radius * radius]);
+
+var arc = d3.arc()
+    .startAngle(function(d) { return d.x0; })
+    .endAngle(function(d) { return d.x1; })
+    .innerRadius(function(d) { return Math.sqrt(d.y0); })
+    .outerRadius(function(d) { return Math.sqrt(d.y1); });
+
+
     createVisualization(root);
+
     function createVisualization(json) {
  
   // Basic setup of page elements.
@@ -224,11 +255,11 @@ function toggleLegend() {
   }
   render() {
     return (
-        <div>
+        <div className="flex-center">
         <div id="main">
             <div id="sequence"></div>
             <div id="chart">
-              <div id="explanation" style="visibility: hidden;">
+              <div id="explanation" >
                 <span id="percentage"></span><br/>
                 of diseases related to <span id="selectedDiseases"></span>
               </div>
@@ -236,7 +267,7 @@ function toggleLegend() {
           </div>
           <div id="sidebar">
             <input type="checkbox" id="togglelegend"/> Legend<br/>
-            <div id="legend" style="visibility: hidden;"></div>
+            <div id="legend" ></div>
           </div>
       <div id="chart"></div>
     </div>
