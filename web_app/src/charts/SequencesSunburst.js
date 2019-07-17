@@ -22,7 +22,7 @@ class SequencesSunburst extends Component {
   }
   createChart(){
     console.log(this.state.originalCenter)
-    var builder = new RingBuilder(this.state.data,this.state.originalCenter)
+    var builder = new RingBuilder(this.props.data,this.props.originalCenter)
     var root = builder.build();
 
     var width = 750;
