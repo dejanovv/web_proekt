@@ -125,13 +125,13 @@ class BubbleChart extends Component {
       svg
         .append("text")
         .attr('y', function(){
-          return d.y - radiusScale(d.NumberOfAppearances)/3;
+          return d.y - radiusScale(d.NumberOfAppearances);
         })
         .attr('x', function(){
           return d.x - radiusScale(d.NumberOfAppearances)/2;
         })
         .attr("font-family", "sans-serif")
-        .attr("font-size", "14px")
+        .attr("font-size", "11px")
         .attr("fill", "black")
         .text(function() {
           return [d.Name];
@@ -172,7 +172,7 @@ class BubbleChart extends Component {
 
       text
         .attr("x", function(d, i) {
-          return data[i].x - radiusScale(d.NumberOfAppearances);
+          return data[i].x - d.Name.length * 2.1;
         })
         .attr("y", function(d, i) {
           return data[i].y;
