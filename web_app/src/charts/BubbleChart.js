@@ -34,7 +34,27 @@ class BubbleChart extends Component {
       str = i * startIndex;
       colors[i] = startString + str + endString;
     }
+    
     return colors;
+  }
+
+  calculateClusterPositions(data){    
+    var categories = data.map(x => x.Category);
+    var clusterPositions = [];
+    var ind = 0;
+    categories.forEach(element => {
+      if (!clusterPositions.includes(element)) {
+        clusterPositions[ind] = element;
+        ind++;
+      }
+    });
+    var initialX = 10, initialY = 10;
+    var factorX = 150, factorY = 50;
+    for (var i=0; i<clusterPositions.length; i++){
+      var t = clusterPositions[i];
+      clusterPositions[i] = {Name: t, x: initialX + i * factorX, y: initialY + i * factorY}
+    }
+    return clusterPositions;
   }
 
   createBarChart() {
@@ -42,17 +62,20 @@ class BubbleChart extends Component {
     var links = this.props.links;
     var data = this.props.data;
     var colors = this.calculateColors(this.state.data);
+    var clusterPositions = this.calculateClusterPositions(this.state.data);
 
     var simulation = d3
       .forceSimulation()
-      .force("x", d3.forceX(500).strength(0.9))
-      .force("y", d3.forceY(500).strength(0.9))
+      .force("x", d3.forceX(function(d,i){
+        return clusterPositions.find(x => x.Name == d.Category).x;
+      }).strength(2))
+      .force("y", d3.forceY(500).strength(10))
       .force('center', d3.forceCenter(500, 500))
       .force("charge", d3.forceManyBody())
       .force(
         "forceCollide",
         d3.forceCollide(function(d) {
-          return d.NumberOfAppearances/2 * 0.7;
+          return radiusScale(d.NumberOfAppearances) + 10;
         })
       )
       .force("link", d3.forceLink())
@@ -62,8 +85,8 @@ class BubbleChart extends Component {
     var svg = d3
       .select(node)
       .append("g")
-      .attr('width', 1700)
-      .attr('height', 800)
+      .attr('width', 1800)
+      .attr('height', 1000)
       .attr("transform", "translate(200,0)");
 
     var radiusScale = d3
@@ -188,7 +211,7 @@ class BubbleChart extends Component {
 
   render() {
     return (
-      <svg ref={node => (this.node = node)} width={window.screen.width} height={window.screen.height}></svg>
+      <svg ref={node => (this.node = node)} width={1700} height={1200}></svg>
     );
   }
 }
