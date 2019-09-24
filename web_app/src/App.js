@@ -507,10 +507,7 @@ function App() {
     }
   ]
   var links = [
-    {"source": 5, "target": 2, 'weight': 13},
-    {"source": 36, "target": 53, 'weight': 4},
-    {"source": 32, "target": 94, 'weight': 7},
-    {"source": 82, "target": 63, 'weight': 3}
+    {"source": 0, "target": 7, 'weight': 13}
   ]
 
   return (

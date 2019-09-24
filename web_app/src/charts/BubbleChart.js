@@ -1,195 +1,230 @@
-import React, { Component } from "react";
-import * as d3 from "d3";
-class BubbleChart extends Component {
-  constructor(props) {
-    super(props);
-    this.createBarChart = this.createBarChart.bind(this);
-    this.state = {
-      data: this.props.data
-    };
-  }
-  componentDidMount() {
-    this.createBarChart();
-  }
-  componentDidUpdate() {
-    this.createBarChart();
-  }
 
-  calculateColors(data) {
-    var categories = data.map(x => x.Category);
-    var filteredCategories = [];
-    var ind = 0;
-    categories.forEach(element => {
-      if (!filteredCategories.includes(element)) {
-        filteredCategories[ind] = element;
-        ind++;
-      }
-    });
-    var startIndex = 360.0 / filteredCategories.length;
-    var str;
-    var startString = "hsla(";
-    var endString = ", 60%, 60%, 1)";
-    var colors = [];
-    for (var i = 0; i < filteredCategories.length; i++) {
-      str = i * startIndex;
-      colors[i] = startString + str + endString;
+import React, {
+    Component
+  } from "react";
+  import * as d3 from "d3";
+  import * as _ from 'underscore';
+  class BubbleChart extends Component {
+    constructor(props) {
+        super(props);
+        this.createBarChart = this.createBarChart.bind(this);
+        this.getNumberOfCategories = this.getNumberOfCategories.bind(this);
+        this.state = {
+            data: this.props.data
+        };
     }
-    return colors;
-  }
-
-  createBarChart() {
-    const node = this.node;
-    var links = this.props.links;
-    var data = this.props.data;
-    var colors = this.calculateColors(this.state.data);
-
-    var simulation = d3
-      .forceSimulation()
-      .force("x", d3.forceX(500).strength(0.9))
-      .force("y", d3.forceY(500).strength(0.9))
-      .force('center', d3.forceCenter(500, 500))
-      .force("charge", d3.forceManyBody())
-      .force(
-        "forceCollide",
-        d3.forceCollide(function(d) {
-          return d.NumberOfAppearances/2 * 0.7;
-        })
-      )
-      .force("link", d3.forceLink())
-      .stop();
-
-
-    var svg = d3
-      .select(node)
-      .append("g")
-      .attr('width', 1700)
-      .attr('height', 800)
-      .attr("transform", "translate(0,0)");
-
-    var radiusScale = d3
-      .scaleSqrt()
-      .domain([
-        Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
-        Math.max.apply(null, data.map(d => d.NumberOfAppearances))
-      ])
-      .range([5, 25]);
-
-    var linkScale = d3
-      .scaleLinear()
-      .domain([
-        Math.min.apply(null, links.map(d => d.weight)),
-        Math.max.apply(null, links.map(d => d.weight))
-      ])
-      .range([1, 7]);      
+    componentDidMount() {
+        this.createBarChart();
+    }
+    componentDidUpdate() {
+        this.createBarChart();
+    }
+  
+    getNumberOfCategories(data){
+        var categories = new Set(data.map(x => x.Category));
+        return categories.size;
+    }
+  
+  
+    createBarChart() {let margin = {top: 100, right: 100, bottom: 100, left: 100};
+     let data = this.props.data;
+     let links = this.props.links;
+    let width = 1500,
+        height = 900,
+        padding = 20, // separation between same-color circles
+        clusterPadding = 40, // separation between different-color circles
+        maxRadius = 22;
+  
+        var radiusScale = d3
+                .scaleSqrt()
+                .domain([
+                    Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
+                    Math.max.apply(null, data.map(d => d.NumberOfAppearances))
+                ])
+                .range([5, 22]);
+  
+            var linkScale = d3
+                .scaleLinear()
+                .domain([
+                    Math.min.apply(null, links.map(d => d.weight)),
+                    Math.max.apply(null, links.map(d => d.weight))
+                ])
+                .range([1, 7]);
+        
+    let n = data.length, // total number of nodes
+        m = this.getNumberOfCategories(data), // number of distinct clusters
+        z = d3.scaleOrdinal(d3.schemeAccent),
+        clusters = new Array(m);
+    
+    let svg = d3.select('.bubbleChart')
+        .append('svg')
+        .attr('height', "100%")
+        .attr('width', "100%")
+        .append('g').attr('transform', 'translate(' + 1600 / 2 + ',' + 1600 / 2 + ')')
+    
+    let nodes = data.map((el) => {
+        let i = el.Category,
+            radius = radiusScale(el.NumberOfAppearances),          
+            d = {cluster: i, r: radius, name: el.Name};
+        if (!clusters[i] || (radius > clusters[i].r)) clusters[i] = d;
+        return d;
+    });
 
     var link = svg
-    .selectAll(".link")
-    .append("g")
-    .data(links)
-    .enter()
-    .append("line")
-    .attr("class", "link")
-    .attr("stroke", "hsla(0, 0%, 40%, 0.58)")
-    .attr("stroke-width", function(d, i) {
-      return linkScale(links[i].weight);
-    });
-
-    var circles = svg
-      .selectAll(".circles")
-      .data(this.state.data)
-      .enter()
-      .append("circle")
-      .attr("class", "circle")
-      .attr("stroke", "black")
-      .attr("id", function(d, i) {
-        return i;
-      })
-      .attr("r", function(d) {
-        return radiusScale(d.NumberOfAppearances);
-      })
-      .attr("fill", function(d) {
-        return colors[d.Category - 1];
-      })
-      .on("mouseover", handleMouseOver)
-      .on("mouseout", handleMouseOut);
-
-    var text = svg
-      .selectAll("text")
-      .data(data)
-      .enter()
-      .append("text");
-
-    function handleMouseOver(d, i) {
-      if (radiusScale(d.NumberOfAppearances) > 15) return;
-
-      svg
-        .append("text")
-        .attr('y', function(){
-          return d.y - radiusScale(d.NumberOfAppearances);
-        })
-        .attr('x', function(){
-          return d.x - radiusScale(d.NumberOfAppearances)/2;
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "11px")
-        .attr("fill", "black")
-        .text(function() {
-          return [d.Name];
-        })        
-        .attr("id", "hoverId");
-    }
-
-    function handleMouseOut(d, i) {
-      d3.select("#hoverId").remove();
-    }
-
-    simulation.nodes(this.state.data);
-    for (var i = 0; i < 500; ++i) simulation.tick();
-
-    simulation.force("link").links(link);
-
-      circles
-        .attr("cx", function(d) {
-          return d.x;
-        })
-        .attr("cy", function(d) {
-          return d.y;
-        });
-
-      link
-        .attr("x1", function(d) {
-          return data[d.source].x;
-        })
-        .attr("y1", function(d) {
-          return data[d.source].y;
-        })
-        .attr("x2", function(d) {
-          return data[d.target].x;
-        })
-        .attr("y2", function(d) {
-          return data[d.target].y;
-        });
-
-      text
-        .attr("x", function(d, i) {
-          return data[i].x - d.Name.length * 2.1;
-        })
-        .attr("y", function(d, i) {
-          return data[i].y;
-        })
-        .text(function(d, i) {
-          return radiusScale(data[i].NumberOfAppearances) > 15 ? d.Name : "";
-        })
-        .attr("font-family", "sans-serif")
-        .attr("font-size", "10px")
-        .attr("fill", "black")
+              .selectAll(".link")
+              .append("g")
+              .data(links)
+              .enter()
+              .append("line")
+              .attr("class", "link")
+              .attr("stroke", "hsla(0, 0%, 10%, 0.58)")
+              .attr("stroke-width", function(d, i) {
+                  return linkScale(links[i].weight);
+              });
     
-  }
+    let circles = svg.append('g')
+          .datum(nodes)
+        .selectAll('.circle')
+          .data(d => d)
+        .enter().append('circle')
+          .attr('r', (d) => d.r)
+          .attr('fill', (d) => z(d.cluster))
+          .attr('stroke', 'black')
+          .attr('stroke-width', 0.3)
+          .attr("name", function(d, i) {
+              return d.Name;
+          })
+          .on("mouseover", handleMouseOver)
+          .on("mouseout", handleMouseOut);
+  
+          var text = svg
+          .selectAll("text")
+          .data(nodes)
+          .enter()
+          .append("text");  
+    
+    let simulation = d3.forceSimulation(nodes)
+        .velocityDecay(0.2)
+        .force("x", d3.forceX().strength(.0005))
+        .force("y", d3.forceY().strength(.0005))
+        .force("link", d3.forceLink())
+        .force("collide", collide)
+        .force("cluster", clustering)
+        .on("tick", ticked);
+    
+    function ticked() {
+        circles
+            .attr('cx', (d) => d.x)
+            .attr('cy', (d) => d.y)
 
-  render() {
-    return (
-      <svg ref={node => (this.node = node)} width={window.screen.width} height={window.screen.height}></svg>
-    );
+  
+         text.
+         attr("x", function(d){
+             return d.x - (d.name.length + d.r) /2;
+         })
+         .attr("y", function(d){
+            return d.y;
+        })
+         .text(function(d,i){
+             return d.r > 17 ? d.name : "";
+         })
+         .attr("font-family", "sans-serif")
+         .attr("font-size", "10px")
+         .attr("fill", "black");;
+
+         link
+         .attr("x1", function(d) {
+             return nodes[d.source].x;
+         })
+         .attr("y1", function(d) {
+             return nodes[d.source].y;
+         })
+         .attr("x2", function(d) {
+             return nodes[d.target].x;
+         })
+         .attr("y2", function(d) {
+             return nodes[d.target].y;
+         });
+    }   
+    
+    // These are implementations of the custom forces.
+    function clustering(alpha) {
+        nodes.forEach(function(d) {
+          var cluster = clusters[d.cluster];
+          if (cluster === d) return;
+          var x = d.x - cluster.x,
+              y = d.y - cluster.y,
+              l = Math.sqrt(x * x + y * y),
+              r = d.r + cluster.r;
+          if (l !== r) {
+            l = (l - r) / l * alpha;
+            d.x -= x *= l;
+            d.y -= y *= l;
+            cluster.x += x;
+            cluster.y += y;
+          }  
+        });
+    }
+    
+    function collide(alpha) {
+      var quadtree = d3.quadtree()
+          .x((d) => d.x)
+          .y((d) => d.y)
+          .addAll(nodes);
+    
+      nodes.forEach(function(d) {
+        var r = d.r + maxRadius + Math.max(padding, clusterPadding) + 30,
+            nx1 = d.x - r,
+            nx2 = d.x + r,
+            ny1 = d.y - r,
+            ny2 = d.y + r;
+        quadtree.visit(function(quad, x1, y1, x2, y2) {
+    
+          if (quad.data && (quad.data !== d)) {
+            var x = d.x - quad.data.x,
+                y = d.y - quad.data.y,
+                l = Math.sqrt(x * x + y * y),
+                r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding) ;
+            if (l < r) {
+              l = (l - r) / l * alpha;
+              d.x -= x *= l;
+              d.y -= y *= l;
+              quad.data.x += x;
+              quad.data.y += y;
+            }
+          }
+          return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+        });
+      });
+    }
+    function handleMouseOver(d, i) {
+      if (d.r > 17) return;
+  
+      svg
+          .append("text")
+          .attr('y', function() {
+              return d.y;
+          })
+          .attr('x', function() {
+              return d.x - (d.r) / 2;
+          })
+          .attr("font-family", "sans-serif")
+          .attr("font-size", "10px")
+          .attr("fill", "black")
+          .text(function() {
+              return d.name;
+          })
+          .attr("id", "hoverId");
   }
-}
-export default BubbleChart;
+  
+  function handleMouseOut() {
+      d3.select("#hoverId").remove();
+  }
+  }
+    render() {
+        return ( 
+            <div className="bubbleChart" style={{width: 1662, height: 1600}}></div>
+        );
+    }
+  }
+  export default BubbleChart;
