@@ -21,7 +21,6 @@ class SequencesSunburst extends Component {
     this.createChart();
   }
   createChart(){
-    console.log(this.state.originalCenter)
     var builder = new RingBuilder(this.props.data,this.props.originalCenter)
     var root = builder.build();
 
@@ -90,7 +89,7 @@ var arc = d3.arc()
       .on("mouseover", mouseover);
 
   // Add the mouseleave handler to the bounding circle.
- // d3.select("#container").on("mouseleave", mouseleave);
+  d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
   totalSize = path.datum().value;

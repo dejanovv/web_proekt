@@ -3,7 +3,7 @@ import './App.css';
 import BubbleChart from '../src/charts/BubbleChart'
 import SequencesSunburst from '../src/charts/SequencesSunburst'
 import HomeScreen from './homescreen.js';
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link,withRouter } from 'react-router-dom';
 import "./style.css"
 import sequencesDataService  from "./services/sequencesData.json"
 import getBubbleData from './charts/data.js';
@@ -14,31 +14,31 @@ class App extends Component {
     super(props);
     this.state = {
       sequencesData: sequencesDataService.sequencesData,
+      diseaseIds : sequencesDataService.sequencesData.map(x=>x[0]),
       originalCenter:sequencesDataService.sequencesData[0][0]
     };
   }
+  componentDidMount(){
+
+  }
   _handleKeyDown = (e) => {
     if (e.key === 'Enter') {
-      console.log('do validate');
-      var result =e.target.value ;
-      this.setState((prevState)=>{
+    var result = e.target.value;
+    if(this.state.diseaseIds.some(x => x == result)){
+      this.setState((prevState) => {
         return {
-          data:prevState.data,
+          sequencesData:prevState.sequencesData,
           originalCenter:result
-        }
-      })
+          }
+        })
+        this.props.history.push('sunburst');
+        this.props.history.go()
+      }
       e.target.value = null;
-    }
+      }
   }
 render(){
-
-
   var bubbleData = getBubbleData();
-
-  var route = [
-    {c:SequencesSunburst,data:this.state.sequencesData,originalCenter:this.state.originalCenter}
-  ]
-  
   var links = [
     {"source": 5, "target": 2, 'weight': 13},
     {"source": 36, "target": 53, 'weight': 4},
@@ -46,24 +46,36 @@ render(){
     {"source": 82, "target": 63, 'weight': 3}
   ]
   return (    
-    
-    <Router>
+    <Router  history={this.props.history}>
     <div id="App">
       <nav >
         <ul>
           <li><Link to={'/'} className="nav-link"> Home </Link></li>
           <li><Link to={'/network'} className="nav-link">Disease Network</Link></li>
           <li><Link to={'/sunburst'} className="nav-link">Sequences Sunburst</Link></li>
-          <li style={{float:"right"}}> <input className="search" onsearch type="search" onKeyDown={this._handleKeyDown} placeholder="Search a disease..."/></li>
+          <li style={{float:"right"}}> 
+            <input 
+              className="search" 
+              list="search" 
+              type="search" 
+              onKeyDown={this._handleKeyDown} 
+              placeholder="Search a disease..."/>
+          </li>
         </ul> 
+        <datalist id="search">
+          {
+            this.state.diseaseIds.map( x => (<option value={x}>{x}</option>))
+          }
+        </datalist>
       </nav>
-          <hr />
         <Switch>
           <Route exact path='/' render = {HomeScreen} />
           <Route path='/network' render = {() => <BubbleChart data={bubbleData} links={links}/>} />
-  {route.map(x=>(
-   <Route exact path='/sunburst' render = {()=><SequencesSunburst data={x.data} originalCenter={x.originalCenter}></SequencesSunburst>} />
-  ))}
+          <Route exact path='/sunburst' render = 
+          {() => <SequencesSunburst 
+                    data={this.state.sequencesData} 
+                    originalCenter={this.state.originalCenter}/>
+          }/>
         </Switch>              
     </div>
     </Router>
@@ -71,4 +83,4 @@ render(){
 }
 }
 
-export default App;
+export default withRouter(App);
