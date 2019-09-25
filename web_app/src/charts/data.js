@@ -27,12 +27,6 @@ var data =  [
     "Category": 18
   },
   {
-    "Id": "78152b99-aaff-42e3-a4e2-07267fd4e13d",
-    "NumberOfAppearances": 30275,
-    "Name": "ea",
-    "Category": 8
-  },
-  {
     "Id": "4ed0ccfc-ad98-4cd5-913c-0efabc5ee87b",
     "NumberOfAppearances": 31991,
     "Name": "ut",
@@ -429,18 +423,6 @@ var data =  [
     "Category": 16
   },
   {
-    "Id": "77ddd34c-f59c-4ca2-86a5-c7434e685a6d",
-    "NumberOfAppearances": 27023,
-    "Name": "Lorem",
-    "Category": 9
-  },
-  {
-    "Id": "71ca5a8c-1c3b-4b50-97aa-e323c186dc2e",
-    "NumberOfAppearances": 22582,
-    "Name": "voluptate",
-    "Category": 11
-  },
-  {
     "Id": "4fc54a97-5619-4de8-9d79-22e7e14210fd",
     "NumberOfAppearances": 30174,
     "Name": "ipsum",
@@ -493,12 +475,6 @@ var data =  [
     "NumberOfAppearances": 4812,
     "Name": "ex",
     "Category": 25
-  },
-  {
-    "Id": "bcc54fe4-e540-439f-a5ea-7632afc86c3f",
-    "NumberOfAppearances": 33112,
-    "Name": "quis",
-    "Category": 2
   },
   {
     "Id": "fa2aa6da-f1dc-419c-85f8-b27ca714c552",
@@ -837,12 +813,6 @@ var data =  [
     "Category": 20
   },
   {
-    "Id": "b05663dd-0809-4559-a3dd-1a87b831306c",
-    "NumberOfAppearances": 30885,
-    "Name": "cillum",
-    "Category": 11
-  },
-  {
     "Id": "bcfaec0f-9d83-4560-9a45-61ad228425e7",
     "NumberOfAppearances": 18494,
     "Name": "incididunt",
@@ -1009,12 +979,6 @@ var data =  [
     "NumberOfAppearances": 26600,
     "Name": "cillum",
     "Category": 2
-  },
-  {
-    "Id": "ba54d6a3-3534-4422-84bc-8078aabf45fa",
-    "NumberOfAppearances": 32887,
-    "Name": "in",
-    "Category": 14
   },
   {
     "Id": "0dbe73d4-d76e-4ee8-92de-7b7a53c08763",
@@ -1215,12 +1179,6 @@ var data =  [
     "Category": 24
   },
   {
-    "Id": "340e25ed-7c2c-4259-8ea7-6cf81b6e0257",
-    "NumberOfAppearances": 32794,
-    "Name": "ipsum",
-    "Category": 8
-  },
-  {
     "Id": "5a3bd526-46a4-4f89-a069-8a3d17987fd3",
     "NumberOfAppearances": 16595,
     "Name": "ex",
@@ -1393,13 +1351,7 @@ var data =  [
     "NumberOfAppearances": 2132,
     "Name": "proident",
     "Category": 31
-  },
-  {
-    "Id": "62820787-0f26-4c45-b186-bd207eb149a0",
-    "NumberOfAppearances": 26694,
-    "Name": "sit",
-    "Category": 9
-  },
+  }, 
   {
     "Id": "ab167d76-ebff-44ad-9520-0f672fe09c8f",
     "NumberOfAppearances": 8108,
@@ -1435,12 +1387,6 @@ var data =  [
     "NumberOfAppearances": 20817,
     "Name": "exercitation",
     "Category": 25
-  },
-  {
-    "Id": "bf64d4cf-f917-48d7-b651-e29066dd4bc2",
-    "NumberOfAppearances": 32562,
-    "Name": "adipisicing",
-    "Category": 8
   },
   {
     "Id": "86d5be38-88bf-47cb-86a6-7625463ad04a",
@@ -1941,12 +1887,6 @@ var data =  [
     "Category": 38
   },
   {
-    "Id": "129e638c-f415-4939-a6bc-bb859dbc446d",
-    "NumberOfAppearances": 24381,
-    "Name": "veniam",
-    "Category": 2
-  },
-  {
     "Id": "5de5a16d-cde7-417b-9e39-eb65b46e000c",
     "NumberOfAppearances": 1060,
     "Name": "non",
@@ -2223,12 +2163,6 @@ var data =  [
     "Category": 12
   },
   {
-    "Id": "eb2a119e-9bf1-4884-bb32-9d385e050f13",
-    "NumberOfAppearances": 26718,
-    "Name": "ea",
-    "Category": 9
-  },
-  {
     "Id": "ec246132-1056-4500-bcd7-bb28ef090a07",
     "NumberOfAppearances": 21381,
     "Name": "labore",
@@ -2289,12 +2223,6 @@ var data =  [
     "Category": 36
   },
   {
-    "Id": "7d7e368d-c5e3-4bfb-926c-d408ff9dc578",
-    "NumberOfAppearances": 3472,
-    "Name": "aliqua",
-    "Category": 2
-  },
-  {
     "Id": "242304b1-14f1-4b60-a340-532caa457d54",
     "NumberOfAppearances": 17330,
     "Name": "laborum",
@@ -2317,12 +2245,6 @@ var data =  [
     "NumberOfAppearances": 6953,
     "Name": "nisi",
     "Category": 7
-  },
-  {
-    "Id": "a72acb8a-eb81-44a1-95e6-b7650b2c7a99",
-    "NumberOfAppearances": 23046,
-    "Name": "id",
-    "Category": 4
   },
   {
     "Id": "86401e37-68e3-4022-8ae6-8a1bdf9964d3",
@@ -2395,12 +2317,6 @@ var data =  [
     "NumberOfAppearances": 1750,
     "Name": "amet",
     "Category": 26
-  },
-  {
-    "Id": "06cb5bff-9abc-42a6-9b33-b3165d63abed",
-    "NumberOfAppearances": 28114,
-    "Name": "consequat",
-    "Category": 14
   },
   {
     "Id": "c9f6dbff-5e25-4f29-a177-613245f20549",
@@ -2637,12 +2553,6 @@ var data =  [
     "Category": 23
   },
   {
-    "Id": "563a8558-fbef-4d5c-a0a1-e58eb1d98fc4",
-    "NumberOfAppearances": 26075,
-    "Name": "reprehenderit",
-    "Category": 14
-  },
-  {
     "Id": "2f9709a6-fd52-416d-9ca7-8920620d6544",
     "NumberOfAppearances": 21077,
     "Name": "non",
@@ -2731,12 +2641,6 @@ var data =  [
     "NumberOfAppearances": 22005,
     "Name": "sit",
     "Category": 20
-  },
-  {
-    "Id": "3af4a5f8-f07a-40a5-9e27-a0fc08505cbb",
-    "NumberOfAppearances": 11027,
-    "Name": "duis",
-    "Category": 2
   },
   {
     "Id": "0bd8605b-32d0-4858-89b4-914a38c20b0f",
@@ -2893,18 +2797,6 @@ var data =  [
     "NumberOfAppearances": 21512,
     "Name": "qui",
     "Category": 20
-  },
-  {
-    "Id": "b2d279bd-4b68-4c49-968a-5d41983db2fa",
-    "NumberOfAppearances": 23788,
-    "Name": "occaecat",
-    "Category": 4
-  },
-  {
-    "Id": "20f45bdb-1503-440c-9844-ecf511dda827",
-    "NumberOfAppearances": 34381,
-    "Name": "excepteur",
-    "Category": 14
   },
   {
     "Id": "1a44e461-7803-43c8-a28f-65362e9bf337",

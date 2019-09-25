@@ -186,7 +186,7 @@ import React, {
             var x = d.x - quad.data.x,
                 y = d.y - quad.data.y,
                 l = Math.sqrt(x * x + y * y),
-                r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding) ;
+                r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding) + 10;
             if (l < r) {
               l = (l - r) / l * alpha;
               d.x -= x *= l;
