@@ -9,7 +9,8 @@ class SequencesSunburst extends Component {
     this.createChart = this.createChart.bind(this);
     this.state = {
       data: this.props.data,
-      originalCenter:this.props.originalCenter
+      originalCenter:this.props.originalCenter,
+      diseaseIds: this.props.diseaseIds
     };
   }
   componentDidMount() {
@@ -21,7 +22,7 @@ class SequencesSunburst extends Component {
     this.createChart();
   }
   createChart(){
-    var builder = new RingBuilder(this.props.data,this.props.originalCenter)
+    var builder = new RingBuilder(this.state.data,this.state.originalCenter)
     var root = builder.build();
 
     var width = 750;
@@ -255,10 +256,39 @@ function toggleLegend() {
   }
 }
   }
+
+  _handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+    var result = e.target.value;
+    if(this.state.diseaseIds.some(x => x == result)){
+      this.setState((prevState) => {
+        return {
+          sequencesData:prevState.sequencesData,
+          originalCenter:result,
+          diseaseIds: prevState.diseaseIds
+          }
+        })
+      }
+      e.target.value = null;
+      }
+  }
   render() {
     return (
+      
+           
         <div className="flex-center">
         <div id="main">
+        <input 
+              className="search" 
+              list="search" 
+              type="search" 
+              onKeyDown={this._handleKeyDown} 
+              placeholder="Search a disease..."/>
+              <datalist id="search">
+              {
+                this.state.diseaseIds.map( x => (<option value={x}>{x}</option>))
+              }
+            </datalist>
             <div id="sequence"></div>
             <div id="chart">
               <div id="explanation" >
