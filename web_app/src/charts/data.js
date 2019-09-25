@@ -3,11 +3,13 @@ import React from 'react';
 function Data(){
 var data =  [
   {
+    "Id": "12",
     "NumberOfAppearances": 5700,
     "Name": "occaecat",
     "Category": 25
   },
   {
+    "Id": "43",
     "NumberOfAppearances": 9981,
     "Name": "non",
     "Category": 9
