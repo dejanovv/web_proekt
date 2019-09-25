@@ -40,10 +40,12 @@ render(){
   ]
   
   var links = [
-    {"source": 5, "target": 2, 'weight': 13},
-    {"source": 36, "target": 53, 'weight': 4},
-    {"source": 32, "target": 94, 'weight': 7},
-    {"source": 82, "target": 63, 'weight': 3}
+    {"source": "7ebc2a18-4b45-4f86-bc0d-27e8e6e3dd27", "target": "d1876b40-9c99-4162-b7d5-666b111fd1b7", 'weight': 13},
+    {"source": "d1876b40-9c99-4162-b7d5-666b111fd1b7", "target": "2b358c96-6647-4017-bb25-92986d2a6505", "weight": 345 },
+    {"source": "d1306e9b-ccc2-4db5-b2e3-9f642a4b9acb", "target": "e23929ec-1960-460d-b27a-53b88c5a95a2", "weight": 32333},
+    {"source": "35f28d3f-a1e7-4a5c-aca5-44f7eec24259", "target": "c45cac11-dc6c-49fc-a8c1-d8e39df5e94e", "weight": 4332},
+    {"source": "3b207b17-a5f1-4f24-8980-94bbcb91160c", "target": "e41de5e6-dd65-47e2-a15f-10c4f4b0c34c", "weight": 454554},
+    {"source": "b558d920-4fa7-462c-b452-4532fc977355", "target": "32399343-241d-4294-8070-01602f9ee331", "weight": 344}
   ]
   return (    
     

@@ -1,9 +1,8 @@
-
 import React, {
     Component
   } from "react";
   import * as d3 from "d3";
-  import * as _ from 'underscore';
+
   class BubbleChart extends Component {
     constructor(props) {
         super(props);
@@ -26,34 +25,34 @@ import React, {
     }
   
   
-    createBarChart() {let margin = {top: 100, right: 100, bottom: 100, left: 100};
+    createBarChart() {
      let data = this.props.data;
      let links = this.props.links;
-    let width = 1500,
-        height = 900,
-        padding = 20, // separation between same-color circles
+    let padding = 20, // separation between same-color circles
         clusterPadding = 40, // separation between different-color circles
         maxRadius = 22;
-  
+        //map circles range 5-22
         var radiusScale = d3
-                .scaleSqrt()
-                .domain([
-                    Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
-                    Math.max.apply(null, data.map(d => d.NumberOfAppearances))
-                ])
-                .range([5, 22]);
-  
-            var linkScale = d3
-                .scaleLinear()
-                .domain([
-                    Math.min.apply(null, links.map(d => d.weight)),
-                    Math.max.apply(null, links.map(d => d.weight))
-                ])
-                .range([1, 7]);
+            .scaleSqrt()
+            .domain([
+                Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
+                Math.max.apply(null, data.map(d => d.NumberOfAppearances))
+            ])
+            .range([5, 22]);
+        
+        //map links range 1-71
+        var linkScale = d3
+            .scaleLinear()
+            .domain([
+                Math.min.apply(null, links.map(d => d.weight)),
+                Math.max.apply(null, links.map(d => d.weight))
+            ])
+            .range([1, 7]);
         
     let n = data.length, // total number of nodes
         m = this.getNumberOfCategories(data), // number of distinct clusters
-        z = d3.scaleOrdinal(d3.schemeAccent),
+        z = d3.scaleSequential().domain([1,m])
+        .interpolator(d3.interpolateRainbow), //color scale
         clusters = new Array(m);
     
     let svg = d3.select('.bubbleChart')
@@ -62,10 +61,11 @@ import React, {
         .attr('width', "100%")
         .append('g').attr('transform', 'translate(' + 1600 / 2 + ',' + 1600 / 2 + ')')
     
+    //map nodes and set the cluster to the largest circle in the category
     let nodes = data.map((el) => {
         let i = el.Category,
             radius = radiusScale(el.NumberOfAppearances),          
-            d = {cluster: i, r: radius, name: el.Name};
+            d = {cluster: i, r: radius, name: el.Name, id: el.Id};
         if (!clusters[i] || (radius > clusters[i].r)) clusters[i] = d;
         return d;
     });
@@ -97,21 +97,23 @@ import React, {
           .on("mouseover", handleMouseOver)
           .on("mouseout", handleMouseOut);
   
-          var text = svg
+    var text = svg
           .selectAll("text")
           .data(nodes)
           .enter()
           .append("text");  
     
+    //define forces
     let simulation = d3.forceSimulation(nodes)
         .velocityDecay(0.2)
         .force("x", d3.forceX().strength(.0005))
         .force("y", d3.forceY().strength(.0005))
-        .force("link", d3.forceLink())
+        .force("link", d3.forceLink().id(d => {return d.id}))
         .force("collide", collide)
         .force("cluster", clustering)
         .on("tick", ticked);
     
+    //function for the simulation tick
     function ticked() {
         circles
             .attr('cx', (d) => d.x)
@@ -134,20 +136,20 @@ import React, {
 
          link
          .attr("x1", function(d) {
-             return nodes[d.source].x;
+             return nodes.find(x => x.id == d.source).x;
          })
          .attr("y1", function(d) {
-             return nodes[d.source].y;
+            return nodes.find(x => x.id == d.source).y;
          })
          .attr("x2", function(d) {
-             return nodes[d.target].x;
+            return nodes.find(x => x.id == d.target).x;
          })
          .attr("y2", function(d) {
-             return nodes[d.target].y;
+            return nodes.find(x => x.id == d.target).y;
          });
     }   
     
-    // These are implementations of the custom forces.
+    // Implementations of the custom forces.
     function clustering(alpha) {
         nodes.forEach(function(d) {
           var cluster = clusters[d.cluster];
@@ -197,8 +199,9 @@ import React, {
         });
       });
     }
+
     function handleMouseOver(d, i) {
-      if (d.r > 17) return;
+      if (d.r > 17) return; //name is already shown
   
       svg
           .append("text")
