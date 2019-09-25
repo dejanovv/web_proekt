@@ -15,7 +15,6 @@ class Ring{
       this.children = [];
       this.color = colors[Math.round(Math.random()*6)];
     }
-  
     addChild(ring){
         this.children.push(ring);
     }
