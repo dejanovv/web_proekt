@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import RingBuilder from '../models/RingBuilder';
+import sequencesDataService  from "./services/sequencesData.js"
 import "../style.css"
 
 class SequencesSunburst extends Component {
@@ -263,7 +264,7 @@ function toggleLegend() {
     if(this.state.diseaseIds.some(x => x == result)){
       this.setState((prevState) => {
         return {
-          sequencesData:prevState.sequencesData,
+          sequencesData:sequencesData.GetData(result),
           originalCenter:result,
           diseaseIds: prevState.diseaseIds
           }
