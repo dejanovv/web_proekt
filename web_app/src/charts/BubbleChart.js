@@ -2,14 +2,17 @@ import React, {
     Component
   } from "react";
   import * as d3 from "d3";
+  import ReactPaginate from "react-paginate";
 
   class BubbleChart extends Component {
     constructor(props) {
         super(props);
         this.createBarChart = this.createBarChart.bind(this);
         this.getNumberOfCategories = this.getNumberOfCategories.bind(this);
+        this.onPageChange = this.onPageChange.bind(this);
         this.state = {
-            data: this.props.data
+            data: this.props.data[0],
+            pageNumber: 0
         };
     }
     componentDidMount() {
@@ -23,14 +26,24 @@ import React, {
         var categories = new Set(data.map(x => x.Category));
         return categories.size;
     }
+
+    onPageChange(e){
+        d3.select(".bubbleChart>svg").remove();
+        console.log(e);
+        this.setState({
+           pageNumber: e.selected
+     })
+     
+    
+    }
   
   
     createBarChart() {
-     let data = this.props.data;
-     let links = this.props.links;
-    let padding = 20, // separation between same-color circles
-        clusterPadding = 40, // separation between different-color circles
-        maxRadius = 22;
+     let data = this.props.bubbleData[this.state.pageNumber].bubbles;
+     let links = this.props.bubbleData[this.state.pageNumber].links;;
+    let padding = 55, // separation between same-color circles
+        clusterPadding = 80, // separation between different-color circles
+        maxRadius = 25;
         //map circles range 5-22
         var radiusScale = d3
             .scaleSqrt()
@@ -38,7 +51,7 @@ import React, {
                 Math.min.apply(null, data.map(d => d.NumberOfAppearances)),
                 Math.max.apply(null, data.map(d => d.NumberOfAppearances))
             ])
-            .range([5, 22]);
+            .range([5, 25]);
         
         //map links range 1-71
         var linkScale = d3
@@ -47,26 +60,33 @@ import React, {
                 Math.min.apply(null, links.map(d => d.weight)),
                 Math.max.apply(null, links.map(d => d.weight))
             ])
-            .range([1, 7]);
+            .range([1, 12]);
+    
         
     let n = data.length, // total number of nodes
         m = this.getNumberOfCategories(data), // number of distinct clusters
         z = d3.scaleSequential().domain([1,m])
-        .interpolator(d3.interpolateRainbow), //color scale
-        clusters = new Array(m);
+        .interpolator(d3.interpolateWarm), //color scale
+        clusters = new Array(m),
+        clusterSizes = new Array(m);
     
     let svg = d3.select('.bubbleChart')
         .append('svg')
         .attr('height', "100%")
         .attr('width', "100%")
-        .append('g').attr('transform', 'translate(' + 1600 / 2 + ',' + 1600 / 2 + ')')
+        .attr('class', "svgg")
+        .append('g').attr('transform', 'translate(' + 2500 / 2 + ',' + 2500 / 2 + ')')
     
     //map nodes and set the cluster to the largest circle in the category
     let nodes = data.map((el) => {
         let i = el.Category,
             radius = radiusScale(el.NumberOfAppearances),          
             d = {cluster: i, r: radius, name: el.Name, id: el.Id};
-        if (!clusters[i] || (radius > clusters[i].r)) clusters[i] = d;
+        if (!clusters[i] || (radius > clusters[i].r)){
+             clusters[i] = d; 
+             clusterSizes[i] = 0;
+        }
+        clusterSizes[i]++;
         return d;
     });
 
@@ -88,7 +108,10 @@ import React, {
           .data(d => d)
         .enter().append('circle')
           .attr('r', (d) => d.r)
-          .attr('fill', (d) => z(d.cluster))
+          .attr('fill', (d) => {
+             if (d.cluster == "V") return z(12)
+             if (d.cluster == "E" ) return z(20) 
+             else return z(d.cluster * 10)})
           .attr('stroke', 'black')
           .attr('stroke-width', 0.3)
           .attr("name", function(d, i) {
@@ -128,10 +151,10 @@ import React, {
             return d.y;
         })
          .text(function(d,i){
-             return d.r > 17 ? d.name : "";
+             return d.r > 10 ? d.name : "";
          })
          .attr("font-family", "sans-serif")
-         .attr("font-size", "10px")
+         .attr("font-size", "9px")
          .attr("fill", "black");;
 
          link
@@ -186,7 +209,7 @@ import React, {
             var x = d.x - quad.data.x,
                 y = d.y - quad.data.y,
                 l = Math.sqrt(x * x + y * y),
-                r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding : clusterPadding) + 10;
+                r = d.r + quad.data.r + (d.cluster === quad.data.cluster ? padding + clusterSizes[d.cluster]/3 -10 : clusterPadding) + 10;
             if (l < r) {
               l = (l - r) / l * alpha;
               d.x -= x *= l;
@@ -201,7 +224,7 @@ import React, {
     }
 
     function handleMouseOver(d, i) {
-      if (d.r > 17) return; //name is already shown
+      if (d.r > 10) return; //name is already shown
   
       svg
           .append("text")
@@ -226,8 +249,20 @@ import React, {
   }
     render() {
         return ( 
-            <div className="bubbleChart" style={{width: 1662, height: 1600}}></div>
-        );
+            <div>   
+            <ReactPaginate 
+            pageCount = {this.props.bubbleData.length}
+            pageRangeDisplayed = {3}
+            marginPagesDisplayed = {3}
+            activeClassName = "active_page"
+            containerClassName = "pagination_container"
+            pageClassName = "page"
+            disableInitialCallback = {true}
+            onPageChange = {e => this.onPageChange(e)}
+             />
+             <div className="bubbleChart" style={{width: 2500, height: 2500}}></div>
+             </div>
+        );        
     }
   }
   export default BubbleChart;

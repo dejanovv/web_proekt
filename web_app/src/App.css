@@ -21,6 +21,18 @@
 .App-link {
   color: #61dafb;
 }
+.active_page {
+  background-color: darkslategrey;
+
+}
+.pagination_container {
+display: flex;
+justify-content: center;
+}
+
+.svgg {
+  margin: 30px;
+}
 
 @keyframes App-logo-spin {
   from {

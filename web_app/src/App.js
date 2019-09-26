@@ -41,8 +41,7 @@ render(){
   
   var bubbleData = getBubbleData();
   console.log(bubbleData.length);
-  var bubles = bubbleData[1].bubbles;
-  var links = bubbleData[1].links;
+  
   return (    
     
     <Router  history={this.props.history}>
@@ -59,8 +58,8 @@ render(){
       </nav>
         <Switch>
           <Route exact path='/' render = {HomeScreen} />
-          <Route path='/network' render = {() => <BubbleChart data={bubles} links={links}/>} />
-          <Route exact path='/sunburst' render = 
+          <Route path='/network' render = {() => <BubbleChart bubbleData={bubbleData} />} />
+          <Route exact path='/sunburst' render =    
           {() => <SequencesSunburst 
                     data={this.state.sequencesData} 
                     originalCenter={this.state.originalCenter}
