@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import * as d3 from "d3";
 import RingBuilder from '../models/RingBuilder';
-import getSequencesData  from "../services/sequencesData.js"
+import sequencesDataService  from "./services/sequencesData.js"
 import "../style.css"
 
 class SequencesSunburst extends Component {
@@ -68,7 +68,8 @@ var arc = d3.arc()
   vis.append("svg:circle")
       .attr("r", radius)
       .style("opacity", 0);
-
+   d3.select("#selectedDiseases")
+      .text(json.name);
   // Turn the data into a d3 hierarchy and calculate the sums.
   var root = d3.hierarchy(json)
       .sum(function(d) { return d.occurrence; })
@@ -261,10 +262,9 @@ function toggleLegend() {
     if (e.key === 'Enter') {
     var result = e.target.value;
     if(this.state.diseaseIds.some(x => x == result)){
-      var data = getSequencesData(result);
       this.setState((prevState) => {
         return {
-          sequencesData:data,
+          sequencesData:sequencesData.GetData(result),
           originalCenter:result,
           diseaseIds: prevState.diseaseIds
           }
@@ -294,6 +294,7 @@ function toggleLegend() {
             <div id="chart">
               <div id="explanation" >
                 <span id="percentage"></span><br/>
+                of diseases related to <span id="selectedDiseases"></span>
               </div>
             </div>
           </div>

@@ -1,39 +1,61 @@
-import React, { Component } from "react";
-import * as d3 from "d3";
-import RingBuilder from '../models/RingBuilder';
-import getSequencesData  from "../services/sequencesData.js"
-import "../style.css"
+var colors = [
+  "#5687d1",
+  "#7b615c",
+  "#de783b",
+  "#6ab975",
+  "#a173d1",
+ "#bbbbbb"
+ ];
+ 
+class Ring{
+  constructor(id,occurrence,name){
+    this.occurrence = occurrence;
+    this.id = id;
+    this.name = name
+    this.children = [];
+    this.color = colors[Math.round(Math.random()*6)];
+  }
 
-class SequencesSunburst extends Component {
-  constructor(props) {
-    super(props);
-    this.createChart = this.createChart.bind(this);
-    this.state = {
-      data: this.props.data,
-      originalCenter:this.props.originalCenter,
-      diseaseIds: this.props.diseaseIds
-    };
+  addChild(ring){
+      this.children.push(ring);
   }
-  componentDidMount() {
-    this.createChart();
+  isLeaf(){
+      return this.children.length==0;
   }
-  componentDidUpdate() {
-    d3.select("#chart>svg").remove()
-    d3.select("#legend>svg").remove()
-    this.createChart();
-  }
-  createChart(){
-    var builder = new RingBuilder(this.state.data,this.state.originalCenter)
-    var root = builder.build();
 
-    var width = 750;
-    var height = 600;
-    var radius = Math.min(width, height) / 2;
+}
+class RingBuilder{
+  constructor(data,originalCenter){
+    this.data=data
+    this.originalCenter=originalCenter;
+    var result = data.find(x=>x[0]==originalCenter);
+    if(!result)
+      throw "Center not found";
+    this.centerRing = new Ring(result[0],0,result[0])
+  }
+  build(center=this.originalCenter ,ring= this.centerRing){
+    var result = this.data.filter(x=> x[0]==center);
+    result.forEach(x=>{
+      var innerRing = new Ring(x[1],x[2],x[1])
+      this.build(x[1],innerRing);
+      ring.addChild(innerRing);
+    });
+    return ring;
+  }
+}
+
+
+
+
+// Dimensions of sunburst.
+var width = 750;
+var height = 600;
+var radius = Math.min(width, height) / 2;
 
 // Breadcrumb dimensions: width, height, spacing, width of tip/tail.
-    var b = {
-      w: 75, h: 30, s: 3, t: 10
-    };
+var b = {
+  w: 75, h: 30, s: 3, t: 10
+};
 
 // Mapping of step names to colors
 // Total size of all segments; we set this later, after loading the data.
@@ -54,11 +76,34 @@ var arc = d3.arc()
     .innerRadius(function(d) { return Math.sqrt(d.y0); })
     .outerRadius(function(d) { return Math.sqrt(d.y1); });
 
-
+// Use d3.text and d3.csvParseRows so that we do not need to have a header
+// row, and can receive the csv as an array of arrays.
+d3.text("data.csv", function(text) {
+  setTimeout(()=>{
+    var csv = d3.csvParseRows(text);
+    var builder = new RingBuilder(csv,csv[0][0])
+    var root = builder.build();
     createVisualization(root);
+  },5000)
 
-    function createVisualization(json) {
-      
+});
+var data = [
+  [11,12,11],
+  [11,13,1],
+  [13,14,7],
+  [11,16,3],
+  [16,19,1],
+  [19,1122,3],
+  [1122,112,8],
+]
+
+//var builder = new RingBuilder(data,data[0][0])
+ // var root = builder.build();
+ // createVisualization(root);
+// Main function to draw and set up the visualization, once we have the data.
+function createVisualization(json) {
+ 
+  console.log(json)
   // Basic setup of page elements.
   initializeBreadcrumbTrail();
   d3.select("#togglelegend").on("click", toggleLegend);
@@ -68,16 +113,19 @@ var arc = d3.arc()
   vis.append("svg:circle")
       .attr("r", radius)
       .style("opacity", 0);
-
+   d3.select("#selectedDiseases")
+      .text(json.name);
   // Turn the data into a d3 hierarchy and calculate the sums.
   var root = d3.hierarchy(json)
       .sum(function(d) { return d.occurrence; })
       .sort(function(a, b) { return b.value - a.value; });
+  console.log(root)
   // For efficiency, filter nodes to keep only those large enough to see.
   var nodes = partition(root).descendants()
       .filter(function(d) {
           return (d.x1 - d.x0 > 0.005); // 0.005 radians = 0.29 degrees
       });
+  console.log(nodes)
   drawLegend(nodes);
   var path = vis.data([json]).selectAll("path")
       .data(nodes)
@@ -90,7 +138,7 @@ var arc = d3.arc()
       .on("mouseover", mouseover);
 
   // Add the mouseleave handler to the bounding circle.
-  d3.select("#container").on("mouseleave", mouseleave);
+ // d3.select("#container").on("mouseleave", mouseleave);
 
   // Get total size of the tree = value of root node from partition.
   totalSize = path.datum().value;
@@ -255,55 +303,3 @@ function toggleLegend() {
     legend.style("visibility", "hidden");
   }
 }
-  }
-
-  _handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-    var result = e.target.value;
-    if(this.state.diseaseIds.some(x => x == result)){
-      var data = getSequencesData(result);
-      this.setState((prevState) => {
-        return {
-          sequencesData:data,
-          originalCenter:result,
-          diseaseIds: prevState.diseaseIds
-          }
-        })
-      }
-      e.target.value = null;
-      }
-  }
-  render() {
-    return (
-      
-           
-        <div className="flex-center">
-        <div id="main">
-        <input 
-              className="search" 
-              list="search" 
-              type="search" 
-              onKeyDown={this._handleKeyDown} 
-              placeholder="Search a disease..."/>
-              <datalist id="search">
-              {
-                this.state.diseaseIds.map( x => (<option value={x}>{x}</option>))
-              }
-            </datalist>
-            <div id="sequence"></div>
-            <div id="chart">
-              <div id="explanation" >
-                <span id="percentage"></span><br/>
-              </div>
-            </div>
-          </div>
-          <div id="sidebar">
-            <input type="checkbox" id="togglelegend"/> Legend<br/>
-            <div id="legend" ></div>
-          </div>
-      <div id="chart"></div>
-    </div>
-    );
-  }
-}
-export default SequencesSunburst;

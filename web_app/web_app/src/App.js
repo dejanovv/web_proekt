@@ -5,18 +5,17 @@ import SequencesSunburst from '../src/charts/SequencesSunburst'
 import HomeScreen from './homescreen.js';
 import { BrowserRouter as Router, Switch, Route, Link,withRouter } from 'react-router-dom';
 import "./style.css"
-import getSequencesData  from "./services/sequencesData.js"
+import sequencesDataService  from "./services/sequencesData.js"
 import getBubbleData from './services/bubbleService.js';
 
-var seqData = getSequencesData();
-console.log(seqData)
+
 class App extends Component { 
   constructor(props) {
     super(props);
     this.state = {
-      sequencesData:seqData,
-      diseaseIds : Array.from(new Set(seqData.map(x=>x[0]))),
-      originalCenter: seqData[1][0]
+      sequencesData: sequencesDataService.getData(),
+      diseaseIds : Array.from(new Set(sequencesDataService.sequencesData.map(x=>x[0]))),
+      originalCenter:sequencesDataService.sequencesData[0][0]
     };
   }
   componentDidMount(){
@@ -40,9 +39,9 @@ console.log(this.props);
 render(){
   
   var bubbleData = getBubbleData();
-  console.log(bubbleData.length);
-  var bubles = bubbleData[1].bubbles;
-  var links = bubbleData[1].links;
+  var bubles = bubbleData[0].bubbles;
+  var links = bubbleData[0].links;
+  console.log(this.props.history);
   return (    
     
     <Router  history={this.props.history}>

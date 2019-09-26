@@ -60,6 +60,7 @@ body {
     overflow: hidden;
     background-color: #333;
   }
+  
   li {
     float: left;
   }
@@ -81,6 +82,7 @@ body {
   */
   .flex-center{
     display: flex;
+    align-items: center;
     justify-content: center;
   }
   .search {
