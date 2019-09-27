@@ -11,7 +11,6 @@ import React, {
         this.getNumberOfCategories = this.getNumberOfCategories.bind(this);
         this.onPageChange = this.onPageChange.bind(this);
         this.state = {
-            data: this.props.data[0],
             pageNumber: 0
         };
     }
@@ -65,8 +64,8 @@ import React, {
         
     let n = data.length, // total number of nodes
         m = this.getNumberOfCategories(data), // number of distinct clusters
-        z = d3.scaleSequential().domain([1,m])
-        .interpolator(d3.interpolateWarm), //color scale
+        z = d3.scaleOrdinal().domain([1,m])
+        .range(d3.schemeSet3), //color scale
         clusters = new Array(m),
         clusterSizes = new Array(m);
     
