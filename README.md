@@ -18,6 +18,5 @@
 <b>Bubble chart</b>
  
 Има четири страници реални податоци, chart-от се апдејтира соодветно.
-***Анимацијата може да се тргне.***
 ![alt text](https://github.com/dejanovv/web_proekt/blob/master/web_app/web_app/src/img/readme3.png?raw=true)
 
