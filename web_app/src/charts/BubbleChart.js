@@ -17,7 +17,8 @@ import React, {
     componentDidMount() {
         this.createBarChart();
     }
-    componentDidUpdate() {
+      componentDidUpdate() {
+          d3.select(".bubbleChart>svg").remove();
         this.createBarChart();
     }
   
